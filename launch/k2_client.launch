@@ -24,7 +24,7 @@
             <param name="host" value="192.168.1.3" />
 
         </node>
-<!--
+
         <node name="k2_rgb" pkg="k2_client" type="rgb">
 
             <param name="host" value="192.168.1.3" />
