@@ -56,11 +56,11 @@ Make sure the dockerfile includes:
 
 1. Open a Docker terminal
 2. Navigate (`cd`) to one directory above your workspace directory 
-3. Execute `docker build -t [directory_above_workspace] .`  Now, you've built the docker container that we'll soon run. 
+3. Execute `docker build -t [name_of_docker_container] .`  Now, you've built the docker container that we'll soon run. 
 4. Get your current absolute path (`pwd`)
 5. Run your docker container with the following command (remember to put in your absolute path):
    
-   `docker run -it -v [absolute_path]/[your workspace]:/root/[your workspace] [directory_above_workspace]`
+   `docker run -it -v [absolute_path]/[your workspace]:/root/[your workspace] [name_of_docker_container]`
 
 6. Run the following commands:
 
