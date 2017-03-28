@@ -1,9 +1,9 @@
-#Kinect ROS Client
+# Kinect ROS Client
 This program receives messages from a Microsoft Kinect Sensor on a Windows computer and sends the messages to a Linux computer which converts them to a ROS format.The data from the messages is then analyzed and can be used to determine behaviors of the bodies sensed by the kinect.
 
 Most code taken from [CMU Original Code - Client](https://github.com/personalrobotics/k2_client) 
 
-###Constructing the Workspace
+### Constructing the Workspace
 
 This repository should be added to a source folder inside of a catkin workspace
 
@@ -14,10 +14,10 @@ The Dockerfile should be placed in 'folder'
 
 `catkin_make` your workspace before starting the program
 
-##Running Docker
+## Running Docker
 ROS Master, all ROS nodes, and the rosbridge server are all intended to be run within a [Docker](https://www.docker.com/) container. 
 
-###Dockerfile
+### Dockerfile
 Make sure the dockerfile includes:
 
 `FROM ros:indigo-ros-base`
@@ -69,7 +69,7 @@ Make sure the dockerfile includes:
 `source ~/[your workspace]/devel/setup.bash`
 
 
-##How to start up another bash terminal from a pre-existing Docker container
+## How to start up another bash terminal from a pre-existing Docker container
 1. Open another Docker terminal
 2. Execute `docker ps`
 3. Find the name of the container from which you wish to run another bash terminal 
@@ -83,7 +83,7 @@ Make sure the dockerfile includes:
 `source ./devel/setup.bash`
 
 
-##Running the program
+## Running the program
 1. Check the ip address of the windows computer by running `ipconfig` in a new terminal on the windows computer. 
 2. Navigate to the launch file on the linux computer, located in `launch`
 3. Change the value parameter of each node to be the ip address of the windows computer, and save the file
@@ -98,12 +98,12 @@ There are six programs that each listen to a port for incoming kinect data on th
 
 Every time changes are made to any of the src files or the msg files, `catkin_make` the workspace
 
-#Data Parsing
+# Data Parsing
 
-###Running Data Parser:
+### Running Data Parser:
 Data parser subscribes to the audio, body, and face topics, parses through the data and calculates certain behaviors, then publishes a message on a new topic. To run data-parser.py, navigate to scripts, `chmod +x data-parser.py`. Now the program can be run from the workspace. `cd ..` then `rosrun k2_client data-parser.py`
 
-###Publisher Component of data-parser
+### Publisher Component of data-parser
 After all information is received and analyzed, the data needed is published to a new topic ('Information'). The message is sent as a PersonArray, which is a PersonMessage array. PersonMessage contains specific fields:
 
 + x, y, and z position based on the head
@@ -116,16 +116,16 @@ After all information is received and analyzed, the data needed is published to 
 
 In order to receive the person information, `rostopic echo Information`
 
-##Seat Assignment
+## Seat Assignment
 'Seats' are assigned at the beginning of the program to each body based on the position within the first 10 messages sent. Each person object has a seat. **Warning: Every person must be in a seat before the program starts**
 
-##Keeping Track of Changing Tracking Ids
+## Keeping Track of Changing Tracking Ids
 If bodies move out of the frame of the kinect or they switch places, they are given a new tracking id. In order to preserve the data, the program matches the new 'untracked' body with one of the bodies previously tracked. It first tries to match a person based on their last known position. If this does not succeed, the program attempts to match the current position of the body with the known position of a seat. If the program is not able to match a tracking id to a person, it continues to try and prints out `Error: Untracked Body`
 
-#####Functions below are calculated in the program based on data returned by the kinect, not by the kinect itself. Error values were chosen based on trial and error. They are values that allow for detection of certain actions without returning false positives.
+##### Functions below are calculated in the program based on data returned by the kinect, not by the kinect itself. Error values were chosen based on trial and error. They are values that allow for detection of certain actions without returning false positives.
 
-##Body
-###Arms Crossed
+## Body
+### Arms Crossed
 Returns true if the absolute value of the distance between the x, y, and z coordinates of:
 
 + left elbow and right hand (joints 5 and 23)
@@ -133,19 +133,19 @@ Returns true if the absolute value of the distance between the x, y, and z coord
 
 are both less than an error range of .3 meters
 
-###Hand Touch
+### Hand Touch
 Returns true if the absolute value of the distance between the x, y, and z coordinates of the right hand and left hand are less than an error range of .15 meters
 
 The kinect is not usually able to differentiate Hand Touch and Arms Crossed and commonly loses track of one or both hands
 
-###Face Touch
+### Face Touch
 Returns true if the absolute value of the distance between the x, y, and z coordinates of the left hand **OR** right hand and the head are less than an error range of .35 meters
 
-###Lean
+### Lean
 Returns 'Forward' if the z orientation of the spine (joint 1) is less than -.03 and 'Backward' if the orientation of the spine is greater than .01
 
-##Face
-###Looking At
+## Face
+### Looking At
 Person A looking at Person B is determined by calculating the ideal yaw of A. There are 12 cases that need to be considered based on which side of the kinect people are positioned and if they are farther or closer to the kinect
 
 + If both are on the negative side and the x distance between B and A is negative, add 180 degrees (pi radians) to the calculated ideal yaw angle
@@ -161,13 +161,13 @@ If the absolute value of the difference of the ideal yaw angle and the yaw of th
 Note: The kinect usually cannot detect faces if they turn past a y orientation of about 200 degrees (pos or neg) or x orientation of 70 degrees (pos or neg)
 
 
-##Audio
-###Volume
+## Audio
+### Volume
 The algorithm for determining volume uses a RMS of the audioStream. Code for this was taken from the `Reader_SpeechFrameArrived` method in `KinectClient.cs` from [this program](https://github.com/ScazLab/rocket_collaboration/tree/master/Thalamus/ThalamusKinectV2.0) written by Andre Pereira.
-###Total Talking Time
+### Total Talking Time
 Audio messages are received every 16 milliseconds if the kinect detects audio within that time frame. For this reason, every time the kinect detects audio and the linux machine receives and audio message, total talking time (recorded in milliseconds) is incremented by 16.
 
 
-#Bugs/TODO
+# Bugs/TODO
 + When running for an extended period (usually within 10 minutes), all programs terminate with a 'connection reset by peer error'
 + Kinect accuracy is poor when people are sitting, especially for hand positions
